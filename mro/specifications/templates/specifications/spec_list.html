@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Specification List{% endblock %}
+
+{% block content %}
+<h1>Specification List</h1>
+    {% for spec in specs %}
+        <h2><a href="{% url 'specs:spec_detail' spec.id %}"> {{spec.title}}</a></h2>
+        <p>Published {{ spec.publish }} by {{ spec.author}}</p>
+        {{ spec.description|truncatewords:30|linebreaks }}
+    {% endfor %}
+{% endblock %}

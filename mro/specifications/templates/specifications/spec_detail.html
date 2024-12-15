@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}Specification Detail{% endblock %}
+
+{% block content %}
+    <h1>{{ spec.title }}</h1>
+    <p>Published {{spec.publish}} by {{spec.author}}</p>
+    {{spec.description|linebreaks}}
+{% endblock %}
