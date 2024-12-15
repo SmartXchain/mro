@@ -46,6 +46,39 @@ class Spec(models.Model):
     def __str__(self):
         return self.title
 
+
+class Classification(models.Model):
+    spec = models.ForeignKey(
+        Spec,
+        on_delete=models.CASCADE,
+        related_name='spec_classification'
+    )
+    method = models.CharField(max_length=50, default='N/A')
+    types = models.CharField(max_length=50, default='N/A')
+    classes = models.CharField(max_length=50, default='N/A')
+    publish = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    status = models.CharField(
+        max_length=2,
+        choices=Status,
+        default=Status.DRAFT
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='classification_publish'
+    )
+    objects = models.Manager()
+    published = PublishedManager()
+
+    class Meta:
+        ordering = ['spec']
+        indexes = [models.Index(fields=['spec']),]
+        
+    def __str__(self):
+        return self.spec.title
+
 class Quality(models.Model):
     class Method(models.TextChoices):
         ACCEPTANCE_TEST = 'LI', 'Lot Inspection'
@@ -96,3 +129,50 @@ class Quality(models.Model):
         
     def __str__(self):
         return self.name
+
+
+class Requirement(models.Model):
+    class Require(models.TextChoices):
+        STRESS_RELIEF_TREATMENT = 'SRT', 'Stress Relief Treatment'
+        CLEANING = 'CL', 'Cleaning'
+        MAIN_PROCEDURE = 'MP', 'Procedure'
+        POST_TREATMENT = 'PT', 'Post Treatment'
+
+    classification = models.ForeignKey(
+        Classification,
+        on_delete=models.CASCADE,
+        related_name='spec_requirement'
+    )
+    step = models.IntegerField(default=0)
+    title = models.CharField(max_length=50)
+    process = models.CharField(
+        max_length=50,
+        choices=Require,
+        default=Require.MAIN_PROCEDURE
+    )
+    description = models.TextField()
+
+    publish = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    status = models.CharField(
+        max_length=2,
+        choices=Status,
+        default=Status.DRAFT
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='requirement_publish'
+    )
+    objects = models.Manager()
+    published = PublishedManager()
+
+    class Meta:
+        ordering = ['title']
+        indexes = [models.Index(fields=['title']),]
+        
+    def __str__(self):
+        return self.title
+
+    
